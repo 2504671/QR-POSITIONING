@@ -29,6 +29,19 @@ h1 {
     left:0;
     transform:translate(-50%, -50%);
 }
+#btn {
+    background-color: var(--theme); /* use your CSS variable */
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    transition: 0.3s; /* smooth effect */
+}
+#btn:hover {
+    background-color: #3a0; /* slightly lighter green */
+    cursor: pointer;
+    transform: scale(1.05); /* small grow effect */
 
 #mapContainer{
     position: relative;
