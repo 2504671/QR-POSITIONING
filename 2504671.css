@@ -42,6 +42,7 @@ h1 {
     background-color: #3a0; /* slightly lighter green */
     cursor: pointer;
     transform: scale(1.05); /* small grow effect */
+}
 
 #mapContainer{
     position: relative;
