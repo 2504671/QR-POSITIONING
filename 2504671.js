@@ -5,50 +5,60 @@ function toggleScanner() {
     scannerOn = !scannerOn;
     if (scannerOn) {
         startScanner();
-        mapContainer.style.display = "none";
-        btn.innerText = "CANCEL";
+        document.getElementById("mapContainer").style.display = "none";
+        document.getElementById("camera").style.display = "block";
+        document.getElementById("btn").innerText = "CANCEL";
     } else {
         stopScanner();
-        mapContainer.style.display = "block";
-        btn.innerText = "SCAN";
+        document.getElementById("mapContainer").style.display = "block";
+        document.getElementById("camera").style.display = "none";
+        document.getElementById("btn").innerText = "SCAN";
     }
 }
 
 function startScanner() {
     reader.start(
         { facingMode: "environment" },
-        {},
+        {
+            fps: 10,
+            qrbox: {width: 300, height: 300}
+        },
         function (text) {
-            const place = JSON.parse(text);
-            showMarkerAt(place.top, place.left);
-            toggleScanner();
+            console.log("QR CODE:", text);
+            
+            try {
+                const data= JSON.parse(text);
+    
+                // Display inventory info
+                document.getElementById("name").innerText = "Name: " + data.name;
+                document.getElementById("store").innerText = "Store: " + (data.inStock ?? data.in_store);
+                document.getElementById("price").innerText = "price: " + data.price + " £";
+
+                // Move marker
+                if(data.top && data.left) {
+                    showMarkerAt(data.top, data.left);
+                }
+
+                //stop scanner
+                stopScanner();
+                scannerOn = false;
+                document.getElementById("btn").innerText = "SCAN";
+    
+                document.getElementById("camera").style.display = "none";
+                document.getElementById("mapContainer").style.display = "block";
+
+                } catch (e) {
+                    console.error("Invalid QR JSON:", text);
+                }
         }
-    ).catch(function (err) {
-        console.error(err);
-    });
+    ).catch(err => console.error("Camera error:", err));
 }
-try {
-    const data= JSON.parse(text);
-    // Move marker
-    if(data.top && data.left) {
-        showMarkerAt(data.top, data.left);
-    }
-    // Display inventory info
-    document.getElementById("name").innerText = "Name: " + data.name;
-    document.getElementById("store").innerText = "Store: " + (data.inStock ?? data.in_store);
-    document.getElementById("price").innerText = "price: " + data.price + " £";
-
-    //stop scanner
-    toggleScanner();
-} catch (e) {
-    console.error("Invalid QR code JSON", e);
-}
-
 function stopScanner() {
-    reader.stop();
+    reader.stop().catch(err => console.log("Stop error:", err));
 }
 
 function showMarkerAt(top, left) {
+    const marker = document.getElementById("marker");
     marker.style.top = top;
     marker.style.left = left;
 }
